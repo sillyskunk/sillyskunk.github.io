@@ -14,10 +14,6 @@
             font-family: Arial, sans-serif;
             margin: 0;
         }
-        #timer {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
 
         .box {
             width: 1000px;
@@ -76,57 +72,6 @@
     </style>
 </head>
 <body>
-<!--
-    <div class="box">
-        <div id="timer">10:00</div>
-        <button id="startBtn">⏯️</button>
-        <button id="resetBtn">↻</button>
-    </div>
--->
-    <script>
-/*
-        let countdown;
-        let timeLeft = 600; // 10 minutes in seconds
-        let isPaused = true;
-
-        function updateDisplay() {
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            document.getElementById('timer').textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        }
-
-        function startTimer() {
-            if (isPaused) {
-                isPaused = false;
-                countdown = setInterval(() => {
-                    if (timeLeft > 0) {
-                        timeLeft--;
-                        updateDisplay();
-                    } else {
-                        clearInterval(countdown);
-                    }
-                }, 1000);
-            } else {
-                clearInterval(countdown);
-                isPaused = true;
-            }
-        }
-
-        function resetTimer() {
-            clearInterval(countdown);
-            timeLeft = 600;
-            isPaused = true;
-            updateDisplay();
-        }
-
-        document.getElementById('startBtn').addEventListener('click', startTimer);
-        document.getElementById('resetBtn').addEventListener('click', resetTimer);
-
-        // 初始化顯示
-        updateDisplay();
-*/
-    </script>
-
     <div class="box">
         <input type="text" id="inputText" placeholder="Topic">
         <button class="button2" id="uploadButton">上傳</button>
@@ -205,37 +150,33 @@
     </div>
 
     <script>
-        let apiUrl = 'https://randomuser.me/api/'
+        let apiUrl = 'http://220.132.89.110:5000/generate_static'
         const tit = new Array('c01f', 'c01b', 'c02f', 'c02b', 'c03f', 'c03b', 'c04f', 'c04b', 'c05f', 'c05b', 'c06f', 'c06b', 'c07f', 'c07b', 'c08f', 'c08b', 'c09f', 'c09b', 'c10f', 'c10b');
 
-        document.getElementById('updateButton').onclick = function() {
-            fetch(apiUrl)
+        document.getElementById('uploadButton').onclick = function() {
+            var userInput = document.getElementById('inputText').value;
+            let data = {
+                "topic": userInput
+            }
+            //console.log(headers)
+            fetch(apiUrl, {
+                method: "POST",
+                body: JSON.stringify(data),
+                headers: new Headers({
+                    "Content-Type": "application/json",
+                })
+            })
                 .then(response => response.json())
                 .then(data => {
                     console.log(data)
                     for (let i = 0; i < 10; i++) {
-                        let card_text = data.new_flash_card[0]
-                        card_front = data.new_flash_card[i].front
-                        card_back = data.new_flash_card[i].back
+                        card_front = data.flashcards[i].front
+                        card_back = data.flashcards[i].back
                         document.getElementById(tit[i*2]).innerText = card_front;
                         document.getElementById(tit[i*2+1]).innerText = card_back;
                     }
                 })
                 .catch(error => console.log(error))
-        }
-
-        document.getElementById('uploadButton').onclick = function() {
-            var userInput = document.getElementById('inputText').value;
-            let headers = {
-                "topic": userInput
-            }
-            console.log(headers)
-            fetch(url, {
-                method: "GET",
-                headers: headers,
-            })
-                .then( (response) => response.json())
-                .then( (json) => console.log(json));
         }
 
         function flipCard(card) {
