@@ -23,14 +23,10 @@
         }
         button {
             padding: 10px 10px;
-            font-size: 20px;
-            margin: 5px;
-            width: 60px;
-            cursor: pointer;
-        }
-        .button2 {
             font-size: 16px;
+            margin: 5px;
             width: 100px;
+            cursor: pointer;
         }
 
         .card-container {
@@ -72,10 +68,13 @@
     </style>
 </head>
 <body>
+    </script>
+
     <div class="box">
         <input type="text" id="inputText" placeholder="Topic">
-        <button class="button2" id="uploadButton">上傳</button>
-        <button class="button2" id="updateButton">更新</button>
+        <button id="uploadButton">上傳</button>
+        <button id="updateButton1">註釋</button>
+        <button id="updateButton2">例句</button>
     </div>
 
     <!-- Card 1 -->
@@ -150,15 +149,55 @@
     </div>
 
     <script>
-        let apiUrl = 'http://220.132.89.110:5000/generate_static'
+        let apiUrl = 'http://220.132.89.110:5000/generate'
+        let apiUrl2_new = 'http://220.132.89.110:5000/get_new_flashcards'
+        let apiUrl2_old = 'http://220.132.89.110:5000/get_old_flashcards'
         const tit = new Array('c01f', 'c01b', 'c02f', 'c02b', 'c03f', 'c03b', 'c04f', 'c04b', 'c05f', 'c05b', 'c06f', 'c06b', 'c07f', 'c07b', 'c08f', 'c08b', 'c09f', 'c09b', 'c10f', 'c10b');
+
+        document.getElementById('updateButton1').onclick = function() {
+            fetch(apiUrl2_old, {
+                method: "POST",
+                headers: new Headers({
+                    "Content-Type": "application/json",
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data)
+                    for (let i = 0; i < 10; i++) {
+                        card_front = data.flashcards[i].front
+                        card_back = data.flashcards[i].back
+                        document.getElementById(tit[i*2]).innerText = card_front;
+                        document.getElementById(tit[i*2+1]).innerText = card_back;
+                    }
+                })
+                .catch(error => console.log(error))
+        }
+        document.getElementById('updateButton2').onclick = function() {
+            fetch(apiUrl2_new, {
+                method: "POST",
+                headers: new Headers({
+                    "Content-Type": "application/json",
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data)
+                    for (let i = 0; i < 10; i++) {
+                        card_front = data.flashcards[i].front
+                        card_back = data.flashcards[i].back
+                        document.getElementById(tit[i*2]).innerText = card_front;
+                        document.getElementById(tit[i*2+1]).innerText = card_back;
+                    }
+                })
+                .catch(error => console.log(error))
+        }
 
         document.getElementById('uploadButton').onclick = function() {
             var userInput = document.getElementById('inputText').value;
             let data = {
                 "topic": userInput
             }
-            //console.log(headers)
             fetch(apiUrl, {
                 method: "POST",
                 body: JSON.stringify(data),
@@ -170,8 +209,8 @@
                 .then(data => {
                     console.log(data)
                     for (let i = 0; i < 10; i++) {
-                        card_front = data.flashcards[i].front
-                        card_back = data.flashcards[i].back
+                        card_front = data.old_flash_card[i].front
+                        card_back = data.old_flash_card[i].back
                         document.getElementById(tit[i*2]).innerText = card_front;
                         document.getElementById(tit[i*2+1]).innerText = card_back;
                     }
